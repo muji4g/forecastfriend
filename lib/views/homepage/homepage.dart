@@ -73,7 +73,9 @@ class _HomePageState extends State<HomePage> {
           icon: const Icon(EvaIcons.search),
           color: secondaryColor,
           iconSize: 28,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, '/searchPage');
+          },
         ),
       ),
       body: Container(
