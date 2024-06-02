@@ -13,7 +13,7 @@ class SearchService {
     if (response.statusCode == 200) {
       return WeatherForCastModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed!');
+      throw Exception('Failed to show data');
     }
   }
 }

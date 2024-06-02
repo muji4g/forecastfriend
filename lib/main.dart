@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forecastfriend/provider/weatherforecase_provider.dart';
 import 'package:forecastfriend/views/forecastpage/forecast_page.dart';
 import 'package:forecastfriend/views/homepage/homepage.dart';
+import 'package:forecastfriend/views/locationSelectPage/selectLocation.dart';
 import 'package:forecastfriend/views/searchpage/search_page.dart';
 import 'package:provider/provider.dart';
 
@@ -18,9 +19,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Forecast Friend',
-      home: const HomePage(),
+      home: const SelectLocation(),
       routes: {
-        '/homePage': (context) => const HomePage(),
         '/searchPage': (context) => const SearchScreen(),
       },
     );

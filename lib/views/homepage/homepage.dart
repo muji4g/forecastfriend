@@ -16,7 +16,8 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String location;
+  const HomePage({super.key, required this.location});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -58,7 +59,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   WeatherViewModel? weather = WeatherViewModel();
-  String region = 'Rawalpindi';
+
   int days = 1;
   @override
   Widget build(BuildContext context) {
@@ -83,7 +84,7 @@ class _HomePageState extends State<HomePage> {
             gradient: backgroundColor,
           ),
           child: FutureBuilder(
-            future: weather?.fetchweather(region, days),
+            future: weather?.fetchweather(widget.location, days),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
@@ -144,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                               child: IconButton(
                                 onPressed: () {},
                                 icon: Icon(
-                                  EvaIcons.plus,
+                                  EvaIcons.pin,
                                   color: secondaryColor,
                                   size: 15,
                                 ),
@@ -303,7 +304,7 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                       // Add some spacing
                                       Text(
-                                        'C',
+                                        '\u2103',
                                         style: semiBoldText.copyWith(
                                             fontSize: size.width * 0.08),
                                       ),
@@ -355,7 +356,7 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ForeCastScreen(
-                                              region: region,
+                                              region: widget.location,
                                             )));
                               },
                               child: Text('See 7 day Forcast',

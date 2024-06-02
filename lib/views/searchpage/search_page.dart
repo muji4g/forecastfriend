@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:forecastfriend/model/weatherforcast.dart';
 import 'package:forecastfriend/utils/colors.dart';
 import 'package:forecastfriend/utils/text_styles.dart';
 import 'package:forecastfriend/viewmodel/searchapi_viewmodel.dart';
@@ -15,6 +16,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchController = TextEditingController();
   SearchViewModel searchView = SearchViewModel();
+  Future<WeatherForCastModel>? searchFuture;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.search),
+          icon: Icon(Icons.arrow_back),
           color: secondaryColor,
           onPressed: () => Navigator.pop(context),
         ),
@@ -43,6 +45,15 @@ class _SearchScreenState extends State<SearchScreen> {
                 cursorColor: secondaryColor,
                 decoration: InputDecoration(
                   fillColor: secondaryColor.withOpacity(0.2),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.clear),
+                    color: secondaryColor,
+                    onPressed: () {
+                      setState(() {
+                        searchController.clear();
+                      });
+                    },
+                  ),
                   prefixIcon: Icon(
                     Icons.search,
                     color: secondaryColor,
@@ -62,12 +73,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       borderRadius: BorderRadius.circular(14)),
                 ),
                 onSubmitted: (value) {
-                  setState(() {});
+                  setState(() {
+                    searchFuture = searchView.fetchSearchResult(value);
+                  });
                 },
               ),
               Expanded(
-                child: FutureBuilder(
-                  future: searchView.fetchSearchResult(searchController.text),
+                child: FutureBuilder<WeatherForCastModel>(
+                  future: searchFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(
@@ -85,15 +98,15 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         ],
                       ));
-                    } else if (!snapshot.hasData || snapshot.data == null) {
+                    } else if (!snapshot.hasData ||
+                        snapshot.data == null ||
+                        searchController.text.isEmpty) {
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Lottie.asset('assets/images/error.json',
-                                width: 120),
                             Text(
-                              'No data found',
+                              'Seach for a region',
                               style: boldText,
                             )
                           ],
@@ -101,18 +114,32 @@ class _SearchScreenState extends State<SearchScreen> {
                       );
                     } else {
                       final data = snapshot.data!;
-                      final query = data.location?.name ?? '';
-                      if (query
-                          .toLowerCase()
-                          .contains(searchController.text.toLowerCase())) {
-                        return ListTile(
-                          title: Text('${data.location!.name}'),
-                        );
-                      } else {
-                        return Center(
-                          child: Text('NO SUCH COUNTRY FOUND'),
-                        );
-                      }
+                      return GestureDetector(
+                        onTap: () {},
+                        child: ListTile(
+                            tileColor: secondaryColor.withOpacity(0.2),
+                            splashColor: secondaryColor.withOpacity(0.3),
+                            title: Text(
+                              '${data.location!.name}' +
+                                  ' , ' +
+                                  '' '${data.location!.country}' '',
+                              style: regularText,
+                            ),
+                            subtitle: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '${data.current!.condition!.text}',
+                                  style: regularText,
+                                ),
+                                Text(
+                                  data.current!.tempC!.toStringAsFixed(0) +
+                                      '\u2103',
+                                  style: regularText,
+                                )
+                              ],
+                            )),
+                      );
                     }
                   },
                 ),
